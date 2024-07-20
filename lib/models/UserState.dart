@@ -8,7 +8,7 @@ class User {
   final bool isActive;
   final bool hasHotel;
   final DateTime createdAt;
-  final DateTime? lastLogin; // Make lastLogin nullable
+  final DateTime? lastLogin;
   final String tokens;
 
   User({

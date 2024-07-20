@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive_flutter/adapters.dart';
 
-const baseUrl = 'https://benchmarkhostel.com.ng';
+const baseUrl = 'https://barogxtrade.com.ng';
+// const baseUrl = 'http://127.0.0.1:8000';
 
 Future<dynamic> studentLogin(String email, String password) async {
   Map body = {
@@ -17,8 +18,6 @@ Future<dynamic> studentLogin(String email, String password) async {
     url,
     body: body,
   );
-  print(res.body);
-
   if (res.statusCode == 200) {
     Map json = jsonDecode(res.body);
     String token = json['token'];
@@ -66,7 +65,6 @@ Future<User?> getUserdata(String token) async {
   var res = await http.get(url, headers: {
     'Authorization': 'Token $token',
   });
-
   if (res.statusCode == 200) {
     var json = jsonDecode(res.body);
 
@@ -244,7 +242,6 @@ Future<dynamic> wardenStudentReg(
   if (res.statusCode == 200) {
     Map json = jsonDecode(res.body);
     String token = json['token'];
-    print(token);
     var url = Uri.parse('$baseUrl/auth/user-details/');
     var res1 = await http.get(url, headers: {
       'Authorization': 'Token $token',
@@ -256,5 +253,18 @@ Future<dynamic> wardenStudentReg(
   } else {
     Map<String, dynamic> json = jsonDecode(res.body);
     return json['detail'] ?? 'Unknown error';
+  }
+}
+
+Future getUserHosteldata(String token) async {
+  var url = Uri.parse('$baseUrl/hostel/hostel-detail-by-user/');
+  var res = await http.get(url, headers: {
+    'Authorization': 'Token $token',
+  });
+  if (res.statusCode == 200) {
+    var json = jsonDecode(res.body);
+    return json;
+  } else {
+    return null;
   }
 }

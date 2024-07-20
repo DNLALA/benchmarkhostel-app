@@ -1,18 +1,26 @@
+import 'package:benchmarkhostel/screens/home/dashboard.dart';
 import 'package:benchmarkhostel/screens/home/home.dart';
 import 'package:benchmarkhostel/services/sharedPreferences/sharedPreferences.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive_flutter/adapters.dart';
 
+import 'services/Token.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
   sharedPreferences = await SharedPreferences.getInstance();
-  runApp(const MyApp());
+  // Open the box
+  var box = await Hive.openBox(tokenBox);
+  String token = box.get('token');
+  runApp(MyApp(token: token));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final String? token;
+
+  const MyApp({super.key, required this.token});
 
   // This widget is the root of your application.
   @override
@@ -39,7 +47,7 @@ class MyApp extends StatelessWidget {
           overline: TextStyle(color: Colors.white),
         ),
       ),
-      home: const HomePage(),
+      home: token == null ? const HomePage() : const DashBoard(),
     );
   }
 }

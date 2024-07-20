@@ -1,4 +1,4 @@
-// ignore_for_file: library_private_types_in_public_api
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously
 
 import 'package:benchmarkhostel/api/base.dart';
 import 'package:benchmarkhostel/componets/botton/SubmitBotton.dart';
@@ -23,6 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   User? user;
   Hostel? hostel;
   bool isLoading = true;
+  bool hasHostel = false;
 
   @override
   void initState() {
@@ -31,14 +32,21 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> fetchUserData() async {
-    bool? hasHotel = sharedPreferences!.getBool("has_Hotel");
-
     var box = await Hive.openBox(tokenBox);
-    String? token = box.get('token');
-    // if (hasHotel = true) {
-    //   print('object');
-    //   getHostel(token!);
-    // }
+    String token = box.get('token');
+    getUserHosteldata(token).then((value) {
+      if (value == null) {
+        setState(() {
+          hasHostel = false;
+        });
+      } else {
+        setState(() {
+          hasHostel = true;
+        });
+      }
+    }).catchError((error) {
+      print('An error occurred: $error');
+    });
   }
 
   @override
@@ -114,7 +122,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 const SizedBox(height: 20),
-                if (hasHotel == true && isWarden == false) ...[
+                if (hasHotel == true) ...[
                   const Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -171,35 +179,33 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                ],
+                ] else
+                  const Center(
+                    child: Text(
+                      'A room has not been assigned to you. Please contact a warden.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Color.fromARGB(255, 160, 98, 160),
+                      ),
+                    ),
+                  ),
               ],
             ),
             Column(
               children: [
-                if (isWarden == true) ...[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: SubmitButton(
-                      buttonText: "Student Details",
-                      textColor: Colors.white,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HostelListScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ],
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: SubmitButton(
                     buttonText: "LogOut",
                     textColor: Colors.white,
-                    onPressed: () {
-                      logout();
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.clear();
+                      var box = await Hive.openBox(tokenBox);
+                      box.delete('token');
+                      await Hive.close();
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -209,6 +215,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                   ),
                 ),
+                const SizedBox(
+                  height: 30,
+                )
               ],
             ),
           ],
