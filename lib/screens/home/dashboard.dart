@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:benchmarkhostel/screens/student/issues.dart';
 import 'package:benchmarkhostel/screens/student/report.dart';
 import 'package:flutter/material.dart';
@@ -21,11 +23,16 @@ class _DashBoardState extends State<DashBoard> {
   late Future<String?> _username;
   bool hasHostel = false;
   dynamic hostel;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _username = _getUsername();
+    _timer = Timer.periodic(
+      Duration(seconds: 30),
+      (Timer t) => _getUsername(),
+    );
   }
 
   Future<String?> _getUsername() async {
@@ -147,13 +154,28 @@ class _DashBoardState extends State<DashBoard> {
                         height: 50,
                       ),
                       Center(
-                        child: Text(
-                          'A room has not been assigned to you. Please contact a warden.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          ),
+                        child: Column(
+                          children: [
+                            Text(
+                              'A room has not been assigned to you. Please contact a warden.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            Text(
+                              'Warden email: Muazzambaba800@gmail.com',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],

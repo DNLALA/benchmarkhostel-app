@@ -19,6 +19,7 @@ class RequestScreen extends StatefulWidget {
 class _RequestScreenState extends State<RequestScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _requestController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _isLoading = true;
   bool _hasRequest = false;
 
@@ -53,6 +54,7 @@ class _RequestScreenState extends State<RequestScreen> {
   Future<void> _submitRequest() async {
     if (_formKey.currentState!.validate()) {
       String request = _requestController.text;
+      String email = _emailController.text;
 
       var box = await Hive.openBox(
           tokenBox); // Assuming you use Hive for token storage
@@ -66,6 +68,7 @@ class _RequestScreenState extends State<RequestScreen> {
           'Authorization': 'Token $token',
         },
         body: jsonEncode({
+          "email": email,
           'request': request,
           'hostel_id': widget.id,
         }),
@@ -118,6 +121,20 @@ class _RequestScreenState extends State<RequestScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
                         TextFormField(
                           controller: _requestController,
                           decoration: const InputDecoration(

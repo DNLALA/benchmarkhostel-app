@@ -1,11 +1,11 @@
-import 'package:benchmarkhostel/screens/home/dashboard.dart';
-import 'package:benchmarkhostel/screens/home/home.dart';
-import 'package:benchmarkhostel/services/sharedPreferences/sharedPreferences.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive_flutter/adapters.dart';
 
+import 'screens/home/dashboard.dart';
+import 'screens/home/home.dart';
 import 'services/Token.dart';
+import 'services/sharedPreferences/sharedPreferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +13,7 @@ Future<void> main() async {
   sharedPreferences = await SharedPreferences.getInstance();
   // Open the box
   var box = await Hive.openBox(tokenBox);
-  String token = box.get('token');
+  String? token = box.get('token');
   runApp(MyApp(token: token));
 }
 

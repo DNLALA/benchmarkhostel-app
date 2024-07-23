@@ -19,6 +19,7 @@ class IssuesScreen extends StatefulWidget {
 class _IssuesScreenState extends State<IssuesScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _requestController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _isLoading = true;
   bool _hasRequest = false;
 
@@ -56,9 +57,9 @@ class _IssuesScreenState extends State<IssuesScreen> {
     });
     if (_formKey.currentState!.validate()) {
       String request = _requestController.text;
+      String email = _emailController.text;
 
-      var box = await Hive.openBox(
-          tokenBox); // Assuming you use Hive for token storage
+      var box = await Hive.openBox(tokenBox);
       String token = box.get('token');
 
       var url = Uri.parse('$baseUrl/hostel/issues-create');
@@ -69,6 +70,7 @@ class _IssuesScreenState extends State<IssuesScreen> {
           'Authorization': 'Token $token',
         },
         body: jsonEncode({
+          'email': email,
           'issues': request,
           'hostel': widget.id,
         }),
@@ -124,6 +126,20 @@ class _IssuesScreenState extends State<IssuesScreen> {
                     key: _formKey,
                     child: Column(
                       children: [
+                        TextFormField(
+                          controller: _emailController,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your request';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 20),
                         TextFormField(
                           controller: _requestController,
                           decoration: const InputDecoration(

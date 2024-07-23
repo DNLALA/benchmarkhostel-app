@@ -19,6 +19,7 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _reportController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   bool _isLoading = true;
 
   @override
@@ -51,24 +52,27 @@ class _ReportScreenState extends State<ReportScreen> {
     });
     if (_formKey.currentState!.validate()) {
       String request = _reportController.text;
+      String email = _emailController.text;
 
       var box = await Hive.openBox(
-          tokenBox); // Assuming you use Hive for token storage
-      String token = box.get('token');
+        tokenBox,
+      );
+      String token = box.get(
+        'token',
+      );
 
       var url = Uri.parse('$baseUrl/hostel/report-create/');
       var res = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Token $token',
+          // 'Authorization': 'Token $token',
         },
         body: jsonEncode({
+          "email": email,
           'report': request,
         }),
       );
-      print(res.statusCode);
-
       if (res.statusCode == 200 || res.statusCode == 201) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Request submitted successfully')),
@@ -114,6 +118,20 @@ class _ReportScreenState extends State<ReportScreen> {
                 key: _formKey,
                 child: Column(
                   children: [
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
                     TextFormField(
                       controller: _reportController,
                       decoration: const InputDecoration(
