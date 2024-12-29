@@ -5,8 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive_flutter/adapters.dart';
 
-const baseUrl = 'https://barogxtrade.com.ng';
-// const baseUrl = 'http://127.0.0.1:8000';
+
+const baseUrl = 'http://127.0.0.1:8000';
 
 Future<dynamic> studentLogin(String email, String password) async {
   Map body = {
